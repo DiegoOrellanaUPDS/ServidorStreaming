@@ -19,11 +19,21 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider
+            .GetRequiredService<ServidorStreamingContext>();
+
+        await db.Database.MigrateAsync();
+    }
+
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
+
 
 app.UseHttpsRedirection();
 

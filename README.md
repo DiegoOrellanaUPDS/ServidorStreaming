@@ -88,14 +88,62 @@ Repositorio:
 
 https://hub.docker.com/r/abrahdev/servidorstreaming-api
 
-## Despliegue
 
-El archivo despliegue.yml utilizará la imagen publicada en Docker Hub sin compilar el código fuente.
+## Despliegue desde Docker Hub
 
-Los pasos de ejecución y verificación se completarán después de probar el despliegue.
+La aplicación puede ejecutarse sin compilar el código fuente,
+utilizando la imagen publicada en Docker Hub.
+
+Imagen: abrahdev/servidorstreaming-api:1.1
+
+### Pasos de despliegue
+
+1. Configurar el archivo .env a partir de .env.example.
+2. Descargar la imagen publicada:
+
+   docker compose --env-file .env -f despliegue.yml pull backend
+
+3. Iniciar los servicios:
+
+   docker compose --env-file .env -f despliegue.yml up -d
+
+4. Comprobar los contenedores:
+
+   docker compose --env-file .env -f despliegue.yml ps
+
+5. Probar el endpoint:
+
+   curl -i http://localhost:5090/api/Categorias
+
+El entorno de desarrollo permite acceder a Scalar en:
+
+http://localhost:5090/scalar/v1
 
 ## Uso de inteligencia artificial
 
-Se utilizó ChatGPT como apoyo para preparar la estructura del proyecto y las configuraciones de Docker.
+Se utilizó ChatGPT como herramienta de apoyo para
+preparar el archivo despliegue.yml.
 
-La explicación de la consulta sobre despliegue.yml y su verificación se añadirá después de realizar las pruebas.
+### Consulta realizada
+
+Se solicitó preparar un archivo Docker Compose que
+ejecute una API .NET 10 utilizando la imagen
+abrahdev/servidorstreaming-api:1.1 de Docker Hub,
+junto con PostgreSQL 17, una red compartida,
+variables de entorno y un volumen para persistencia.
+
+La configuración debía utilizar image en lugar de
+build para evitar compilar el código fuente.
+
+### Verificación de la propuesta
+
+1. Se detuvieron los contenedores anteriores.
+2. Se descargó la imagen 1.1 desde Docker Hub.
+3. Se levantaron ambos servicios con despliegue.yml.
+4. Se comprobó que PostgreSQL estuviera saludable.
+5. Se ejecutó una petición GET mediante curl.
+6. Se obtuvo HTTP/1.1 200 OK y la categoría
+   Documentales almacenada en PostgreSQL.
+
+Resultado: el despliegue funcionó correctamente
+sin necesidad de compilar el proyecto.

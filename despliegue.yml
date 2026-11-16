@@ -1,0 +1,41 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: streaming-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - streaming_pgdata:/var/lib/postgresql/data
+    networks:
+      - streaming-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    image: abrahdev/servidorstreaming-api:1.1
+    container_name: streaming-api
+    ports:
+      - "${API_PORT}:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - streaming-net
+
+volumes:
+  streaming_pgdata:
+
+networks:
+  streaming-net:
+    driver: bridge
